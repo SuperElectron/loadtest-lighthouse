@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  code-quality:
+    container_name: code-quality
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - 5000:5000
+
