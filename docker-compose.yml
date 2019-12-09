@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   code-quality:
-    container_name: code-quality
+    container_name: loadtest-lighthouse
     build:
       dockerfile: Dockerfile
       context: .
