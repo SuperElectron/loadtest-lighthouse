@@ -80,7 +80,7 @@ Noteworthy Points
 1. the image is assume to be in your gitlab registry!
 2. declare a basic setup to include "test" in your pipeline.
 3. only should target the branch you are pushing, or on which branches you wish to run this test
-5. ```tail -f /dev/null``` is used to for debugging in the pipeline. TAKE THIS OUT OR IT WON'T PASS THIS POINT!
+5. ```tail -f /dev/null``` is used in ```Dockerfile``` to keep container running.  This can also be added into gitlab-ci under ```scripts``` so that you can debug the pipeline.
 - Go to your container registry in gitlab: project >> packages >> container registry and view a similar Docker image path.
 
 Example:
@@ -88,10 +88,8 @@ Example:
 - replace 'mysql' with 'nightwatch' at the end like so, and build it:
 
 ```bash
-$ docker build -t git.company-name.com:xxxx/commerce/nightwatch .
+$ docker run -t git.company-name.com:xxxx/commerce/loadtest-lighthouse
 ```
-
-- did you notice the '.' at the end?  Include it OR IT WON'T WORK!
 
 <br />
 
@@ -99,7 +97,7 @@ $ docker build -t git.company-name.com:xxxx/commerce/nightwatch .
 
 - Push the image to your project container registry
 ```bash
-$ docker push git.company-name.com:xxxx/commerce/nightwatch
+$ docker push git.company-name.com:xxxx/commerce/loadtest-lighthouse
 ```
 
 #### CI-Pipeline Example
