@@ -90,7 +90,7 @@ def get_perf_measure(driver, url, display=True):
 
 @time_it
 def post_perf_measure(url, data, header):
-    return requests.post(post_address, data=json.dumps(post_data), headers=headers)
+    return requests.post(url, data=json.dumps(data), headers=header)
 
 
 def import_payload(project_root, file_path, display=False):
@@ -133,48 +133,53 @@ def import_environment_variables():
         exit(1)
 
 
-print("\n\n*****************\nLOADING DATA AND ENVIRONMENT VARIABLES")
-PROJECT_ROOT, LOADTIME_THRESHOLD, ENDPOINT_CREDS, PAYLOAD_PATH, HOST_ADDRESS, POST_URL = import_environment_variables()
-# pass payload path relative to the project root & load it
-post_data = import_payload(PROJECT_ROOT, PAYLOAD_PATH, display=False)
-post_address = HOST_ADDRESS + "/" + POST_URL
+def main():
+    print("\n\n*****************\nLOADING DATA AND ENVIRONMENT VARIABLES")
+    PROJECT_ROOT, LOADTIME_THRESHOLD, ENDPOINT_CREDS, PAYLOAD_PATH, HOST_ADDRESS, POST_URL = import_environment_variables()
+    # pass payload path relative to the project root & load it
+    post_data = import_payload(PROJECT_ROOT, PAYLOAD_PATH, display=False)
+    post_address = HOST_ADDRESS + "/" + POST_URL
 
-headers = {
-"Accept": "*/*",
-"Cache-Control": "no-cache",
-"Content-Type": "application/json",
-"Authorization": ENDPOINT_CREDS,
-"Cookie": "XDEBUG_SESSION=PHPSTORM"
-}
+    headers = {
+    "Accept": "*/*",
+    "Cache-Control": "no-cache",
+    "Content-Type": "application/json",
+    "Authorization": ENDPOINT_CREDS,
+    "Cookie": "XDEBUG_SESSION=PHPSTORM"
+    }
 
-time, response = post_perf_measure(post_address, post_data, headers)
-print("Load time threshold:", LOADTIME_THRESHOLD)
-print("post request time {}".format(time))
-print("http url {}\nresponse: {}\nresponse body\n{}\n\nheaders\n{}\n".format(response.url, response.status_code, response.text, response.headers))
+    time, response = post_perf_measure(post_address, post_data, headers)
+    print("Load time threshold:", LOADTIME_THRESHOLD)
+    print("post request time {}".format(time))
+    print("http url {}\nresponse: {}\nresponse body\n{}\n\nheaders\n{}\n".format(response.url, response.status_code, response.text, response.headers))
 
-try:
-    url = json.loads(response.text)['cartUri']
-except TypeError as err:
-    print(err)
-    exit(1)
+    try:
+        url = json.loads(response.text)['cartUri']
+    except TypeError as err:
+        print(err)
+        exit(1)
 
-# Testing DOM and load times for webpage
-print("\n\n*****************\nSELENIUM PERFORMANCE INDICATORS")
-chrome_options = Options()
-chrome_options.add_argument("--headless")
-chrome_options.add_argument("--no-sandbox")
-driver = webdriver.Chrome(options=chrome_options)
-performance = get_perf_measure(driver, str(url), display=True)
-driver.quit()
+    # Testing DOM and load times for webpage
+    print("\n\n*****************\nSELENIUM PERFORMANCE INDICATORS")
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    driver = webdriver.Chrome(options=chrome_options)
+    get_perf_measure(driver, str(url), display=True)
+    driver.quit()
 
-print("\n\n*****************\nSTARTING LIGHTHOUSE TEST\n")
-lighthouse_command = "lighthouse " + str(url) + " --chrome-flags='--headless --no-sandbox' --output csv --[no-]enable-error-reporting " + "--output-path " + PROJECT_ROOT +  '/lighthouse-reports.csv'
-print(lighthouse_command)
-subprocess.call(lighthouse_command, shell=True)
+    print("\n\n*****************\nSTARTING LIGHTHOUSE TEST\n")
+    lighthouse_command = "lighthouse " + str(url) + " --chrome-flags='--headless --no-sandbox' --output csv --[no-]enable-error-reporting " + "--output-path " + PROJECT_ROOT +  '/lighthouse-reports.csv'
+    print(lighthouse_command)
+    subprocess.call(lighthouse_command, shell=True)
 
-if(time < int(LOADTIME_THRESHOLD)):
-    print("\n\nPASS load-time test")
-    exit(0)
-else:
-    print("\n\nFAIL load-time test")
-    exit(1)
+    if(time < int(LOADTIME_THRESHOLD)):
+        print("\n\nPASS load-time test")
+        exit(0)
+    else:
+        print("\n\nFAIL load-time test")
+        exit(1)
+
+
+if __name__ == '__main__':
+    main()
