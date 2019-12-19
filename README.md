@@ -1,6 +1,7 @@
 # Code Quality for Web Applications
 - A basic image that can be used in to measure load-test and lighthouse analysis on your web application project.
 - This document covers configuration of this image for your project.
+- Check out dockerhub for the pre-built image: https://hub.docker.com/repository/docker/superelectron/loadtest-lighthouse
 ---
 
 ## Pulling the Image and Customizing it for Your Project
