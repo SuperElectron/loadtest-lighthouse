@@ -30,6 +30,19 @@ $ docker run superelectron/loadtest-lighthouse:latest
     Makefile
 ```
 
+#### `make_env` file
+- you can use the makefile commands, but you first need to create a ```make_env``` file.  
+- ```make_env``` can be empty, but it suggested to add in this:
+
+```bash
+EXPORTS = exports.sh
+VERSION = $$(date +%Y-%m-%d)
+COMPANY_REPOSITORY = gitlab-registry-name
+```
+
+#### `exports.sh` file
+- this contains the exports variables mentioned in __Example in Docker Container__ below.
+
 ---
 
 ### Local Development and Setup for Your Project
